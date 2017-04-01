@@ -204,3 +204,85 @@ class sbmk_train(object):
         else:
             r = numerator_value/denominator_value
             return r
+
+class movie_train(object):
+    def __init__(self):
+        pass
+
+    def get_training_data(self):
+        return self.training_data
+
+    def load(self, training_data):
+        self.training_data = training_data
+
+    def get_recommendation(self, userdata={}, limit=0.3, return_max=100):
+        umovie_id_set = set(userdata.keys())
+        all_id = set(self.training_data.keys())
+        movie_ranking = {}
+        # movie ranking = sum(sim * rank) / sum(sim)
+        # Calculate all relation from training data with userdata
+        if len(userdata) < 3:
+            compaire_method = self.get_sim
+        else:
+            compaire_method = self.get_correlation
+        for oid in all_id:
+            oid_set = set(self.training_data[oid])
+            sim = compaire_method(self.training_data[oid], userdata)
+            if sim >= limit and sim != 0:
+                diff_moive_id = oid_set.difference(umovie_id_set)
+                for movie_id in diff_moive_id:
+                    try:
+                        movie_ranking[movie_id]['total'] += sim * self.training_data[oid][movie_id]
+                        movie_ranking[movie_id]['simsum'] += sim
+                    except:
+                        movie_ranking[movie_id] = {'total': sim * self.training_data[oid][movie_id],
+                                                   'simsum': sim}
+            else:
+                # print oid, sim
+                pass
+        rec = {}
+        for movie_id, result in movie_ranking.items():
+            rec[movie_id] = result['total'] / result['simsum']
+        return_len = min(return_max, len(rec))
+        return sorted(rec.items(), key=lambda x: x[1], reverse=True)[:return_len]
+
+    def get_sim(self, training_user={}, userdata={}):
+        both_viewed = set(training_user.keys()).intersection(set(userdata.keys()))
+
+        # Conditions to check they both have an common rating items 
+        if len(both_viewed) == 0:
+            return 0
+
+        # Finding Euclidean distance 
+        sum_of_eclidean_distance = 0
+
+        for item in both_viewed:
+            sum_of_eclidean_distance += pow(training_user[item] - userdata[item],2)
+        return 1/(1+sqrt(sum_of_eclidean_distance))
+
+    def get_correlation(self, training_user={}, userdata={}):
+        both_rated = set(training_user.keys()).intersection(set(userdata.keys()))
+        number_of_ratings = len(both_rated) 
+        # Conditions to check they both have an common rating items 
+        if number_of_ratings == 0:
+            return -1
+
+        # Add up all the preferences of each user
+        person1_preferences_sum = sum([training_user[item] for item in both_rated])
+        person2_preferences_sum = sum([userdata[item] for item in both_rated])
+
+        # Sum up the squares of preferences of each user
+        person1_square_preferences_sum = sum([pow(training_user[item],2) for item in both_rated])
+        person2_square_preferences_sum = sum([pow(userdata[item],2) for item in both_rated])
+
+        # Sum up the product value of both preferences for each item
+        product_sum_of_both_users = sum([training_user[item] * userdata[item] for item in both_rated])
+
+        # Calculate the pearson score
+        numerator_value = product_sum_of_both_users - (person1_preferences_sum * person2_preferences_sum / number_of_ratings)
+        denominator_value = sqrt((person1_square_preferences_sum - pow(person1_preferences_sum,2) / number_of_ratings) * (person2_square_preferences_sum - pow(person2_preferences_sum,2) / number_of_ratings))
+        if denominator_value == 0 or numerator_value == 0:
+            return -1
+        else:
+            r = numerator_value / denominator_value
+            return r
