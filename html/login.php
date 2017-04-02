@@ -18,8 +18,15 @@ if(isset($_POST['uid']))
         {
             $_SESSION[$sessionID] = $_POST['uid'];
             $_SESSION[$done_rate] = $data[$done_rate];
+            $_SESSION[$display] = $_POST['uid'];
+            unset($_SESSION[$guest_rating]);
+            header("location: index.php");
         }
-        header("location: index.php");
+        else
+        {
+            echo "Login Failed!<br>";
+        }
+        
     }
     else
     {

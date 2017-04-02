@@ -3,5 +3,68 @@ session_start();
 include_once "lib/db.php";
 include_once "lib/conf.php";
 ?>
-<iframe src="rec_movies.php" width=49% height=90% align="left"></iframe>
-<iframe src="rec_movies.php" width=49% height=90% align="right"></iframe>
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta name="keywords" content="" />
+        <meta name="description" content="" />
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+        <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
+        <script type="text/javascript">
+            function reload_movie_list()
+            {
+                $.get("rec_movies.php", function(data) {
+                    //$( ".result" ).html( data );
+                    //alert( data );
+                    $("#rec_movies").html(data);
+                });
+            }
+            function reload_rated_movie_list()
+            {
+                $.get("rated_movie_list.php", function(data) {
+                    //$( ".result" ).html( data );
+                    //alert( data );
+                    $("#rated_movies").html(data);
+                });
+            }
+            reload_movie_list();
+            reload_rated_movie_list();
+            function rating_movie(obj_id, movieid)
+            {
+                if($(obj_id).val() != "")
+                {
+                    $url = "rating_movie.php?movieid=" + movieid + "&rating=" + $(obj_id).val();
+                    $.get($url, function(){
+                        reload_movie_list();
+                        reload_rated_movie_list();
+                    });
+                }
+            }
+        </script>
+    </head>
+<?php
+if(!isset($_SESSION[$sessionID]))
+{
+    // without login... show login page
+    echo "<a href=login.php>LOGIN</a> ";
+    echo "<a href=reg.php>REG</a>";
+    echo "<p>";
+    $_SESSION[$display] = "Guest";
+}
+else
+{
+    echo "<a href=logout.php>LOGOUT</a><p>";
+}
+echo "Hi " . $_SESSION[$display] . "<p>";
+?>
+<table border=0>
+    <tr>
+        <td width="60%">This is the movies list you may like<br>
+            <div id=rec_movies></div>
+        </td>
+        <td valign="top">This is your rating movies<br>
+            <div id=rated_movies></div>
+        </td>
+    </tr>
+</table>

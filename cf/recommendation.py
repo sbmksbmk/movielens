@@ -1,5 +1,6 @@
 from math import sqrt
 
+
 class sbmk_train(object):
     def __init__(self):
         pass
@@ -57,7 +58,6 @@ class sbmk_train(object):
                     total_test_data += 1
                     rr = float(result.get(mid, 10))
                     if abs(ranking - rr) / ranking <= accept_diff:
-                    # if abs(ranking - rr) <= 0.5:
                         hit_ranking_range += 1
                         try:
                             hit_result[uid][mid] = [ranking, rr]
@@ -65,23 +65,6 @@ class sbmk_train(object):
                             hit_result[uid] = {mid: [ranking, rr]}
             # print hit_result
             print "in {},  {} %".format(i / 10.0, float(hit_ranking_range) / total_test_data)
-        """
-        for uid in test_data.keys():
-            # result = self.rec_for_user(self.training_data.get(uid, {}).copy())
-            result = self.rec_eng(uid, self.training_data.get(uid, {}).copy())
-            for mid, ranking in test_data[uid].items():
-                total_test_data += 1
-                rr = float(result.get(mid, 10))
-                if abs(ranking - rr) / ranking <= accept_diff:
-                # if abs(ranking - rr) <= 0.5:
-                    hit_ranking_range += 1
-                    try:
-                        hit_result[uid][mid] = [ranking, rr]
-                    except:
-                        hit_result[uid] = {mid: [ranking, rr]}
-        # print hit_result
-        print "{} %".format(float(hit_ranking_range) / total_test_data)
-        """
 
     def rec_for_user(self, userdata={}):
         # find others like userdata from self.training_data data
@@ -104,7 +87,7 @@ class sbmk_train(object):
                     exit()
             sub_user['all_diff'] = s
             try:
-                sub_user['avg_diff'] = ((float(s)) ** 0.5)/ sub_user['same_keys']
+                sub_user['avg_diff'] = ((float(s)) ** 0.5) / sub_user['same_keys']
             except:
                 sub_user['avg_diff'] = 5.0
             if len(same_keys) >= least_same and sub_user['avg_diff'] <= 1.0:
@@ -166,22 +149,22 @@ class sbmk_train(object):
     def get_sim(self, person_one={}, person_two={}):
         both_viewed = set(person_one.keys()).intersection(set(person_two.keys()))
 
-        # Conditions to check they both have an common rating items 
+        # Conditions to check they both have an common rating items
         if len(both_viewed) == 0:
             return 0
 
-        # Finding Euclidean distance 
+        # Finding Euclidean distance
         sum_of_eclidean_distance = 0
 
         for item in both_viewed:
-            sum_of_eclidean_distance += pow(person_one[item] - person_two[item],2)
+            sum_of_eclidean_distance += pow(person_one[item] - person_two[item], 2)
 
-        return 1/(1+sqrt(sum_of_eclidean_distance))
+        return 1 / (1 + sqrt(sum_of_eclidean_distance))
 
     def get_correlation(self, person_one={}, person_two={}, person_one_set=set(), person_two_set=set()):
         both_rated = set(person_one.keys()).intersection(set(person_two.keys()))
-        number_of_ratings = len(both_rated) 
-        # Conditions to check they both have an common rating items 
+        number_of_ratings = len(both_rated)
+        # Conditions to check they both have an common rating items
         if number_of_ratings == 0:
             return -1
 
@@ -190,20 +173,21 @@ class sbmk_train(object):
         person2_preferences_sum = sum([person_two[item] for item in both_rated])
 
         # Sum up the squares of preferences of each user
-        person1_square_preferences_sum = sum([pow(person_one[item],2) for item in both_rated])
-        person2_square_preferences_sum = sum([pow(person_two[item],2) for item in both_rated])
+        person1_square_preferences_sum = sum([pow(person_one[item], 2) for item in both_rated])
+        person2_square_preferences_sum = sum([pow(person_two[item], 2) for item in both_rated])
 
         # Sum up the product value of both preferences for each item
         product_sum_of_both_users = sum([person_one[item] * person_two[item] for item in both_rated])
 
         # Calculate the pearson score
-        numerator_value = product_sum_of_both_users - (person1_preferences_sum*person2_preferences_sum/number_of_ratings)
-        denominator_value = sqrt((person1_square_preferences_sum - pow(person1_preferences_sum,2)/number_of_ratings) * (person2_square_preferences_sum -pow(person2_preferences_sum,2)/number_of_ratings))
+        numerator_value = product_sum_of_both_users - (person1_preferences_sum * person2_preferences_sum / number_of_ratings)
+        denominator_value = sqrt((person1_square_preferences_sum - pow(person1_preferences_sum, 2) / number_of_ratings) * (person2_square_preferences_sum - pow(person2_preferences_sum, 2) / number_of_ratings))
         if denominator_value == 0 or numerator_value == 0:
             return -1
         else:
-            r = numerator_value/denominator_value
+            r = numerator_value / denominator_value
             return r
+
 
 class movie_train(object):
     def __init__(self):
@@ -221,14 +205,14 @@ class movie_train(object):
         movie_ranking = {}
         # movie ranking = sum(sim * rank) / sum(sim)
         # Calculate all relation from training data with userdata
-        if len(userdata) < 3:
+        if len(userdata) < 10:
             compaire_method = self.get_sim
         else:
             compaire_method = self.get_correlation
         for oid in all_id:
             oid_set = set(self.training_data[oid])
             sim = compaire_method(self.training_data[oid], userdata)
-            if sim >= limit and sim != 0:
+            if sim >= limit:
                 diff_moive_id = oid_set.difference(umovie_id_set)
                 for movie_id in diff_moive_id:
                     try:
@@ -242,28 +226,31 @@ class movie_train(object):
                 pass
         rec = {}
         for movie_id, result in movie_ranking.items():
-            rec[movie_id] = result['total'] / result['simsum']
+            try:
+                rec[movie_id] = result['total'] / result['simsum']
+            except:
+                rec[movie_id] = 0
         return_len = min(return_max, len(rec))
         return sorted(rec.items(), key=lambda x: x[1], reverse=True)[:return_len]
 
     def get_sim(self, training_user={}, userdata={}):
         both_viewed = set(training_user.keys()).intersection(set(userdata.keys()))
 
-        # Conditions to check they both have an common rating items 
+        # Conditions to check they both have an common rating items
         if len(both_viewed) == 0:
             return 0
 
-        # Finding Euclidean distance 
+        # Finding Euclidean distance
         sum_of_eclidean_distance = 0
 
         for item in both_viewed:
-            sum_of_eclidean_distance += pow(training_user[item] - userdata[item],2)
-        return 1/(1+sqrt(sum_of_eclidean_distance))
+            sum_of_eclidean_distance += pow(training_user[item] - userdata[item], 2)
+        return 1 / (1 + sqrt(sum_of_eclidean_distance))
 
     def get_correlation(self, training_user={}, userdata={}):
         both_rated = set(training_user.keys()).intersection(set(userdata.keys()))
-        number_of_ratings = len(both_rated) 
-        # Conditions to check they both have an common rating items 
+        number_of_ratings = len(both_rated)
+        # Conditions to check they both have an common rating items
         if number_of_ratings == 0:
             return -1
 
@@ -272,16 +259,16 @@ class movie_train(object):
         person2_preferences_sum = sum([userdata[item] for item in both_rated])
 
         # Sum up the squares of preferences of each user
-        person1_square_preferences_sum = sum([pow(training_user[item],2) for item in both_rated])
-        person2_square_preferences_sum = sum([pow(userdata[item],2) for item in both_rated])
+        person1_square_preferences_sum = sum([pow(training_user[item], 2) for item in both_rated])
+        person2_square_preferences_sum = sum([pow(userdata[item], 2) for item in both_rated])
 
         # Sum up the product value of both preferences for each item
         product_sum_of_both_users = sum([training_user[item] * userdata[item] for item in both_rated])
 
         # Calculate the pearson score
         numerator_value = product_sum_of_both_users - (person1_preferences_sum * person2_preferences_sum / number_of_ratings)
-        denominator_value = sqrt((person1_square_preferences_sum - pow(person1_preferences_sum,2) / number_of_ratings) * (person2_square_preferences_sum - pow(person2_preferences_sum,2) / number_of_ratings))
-        if denominator_value == 0 or numerator_value == 0:
+        denominator_value = sqrt((person1_square_preferences_sum - pow(person1_preferences_sum, 2) / number_of_ratings) * (person2_square_preferences_sum - pow(person2_preferences_sum, 2) / number_of_ratings))
+        if denominator_value == 0:
             return -1
         else:
             r = numerator_value / denominator_value

@@ -49,7 +49,6 @@ def main(input):
                 conn.commit()
         conn.commit()
 
-
     """
     by training data, add some hot movies into db for new user
     rule: need 10% of total training user rated the movie with 4 or higher
