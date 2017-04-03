@@ -1,6 +1,7 @@
 #!/bin/bash
-CONTAINER=myservice
-DOCKER_IMAGE=$CONTAINER:no
+CONTAINER=recommendation-service
+TAG=$(git rev-parse --short HEAD)
+DOCKER_IMAGE=$CONTAINER:$TAG
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 BUILDROOT=$DIR/..
