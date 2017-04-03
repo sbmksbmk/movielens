@@ -12,9 +12,26 @@ include_once "lib/conf.php";
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
         <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.11.1/jquery-ui.min.js"></script>
         <script type="text/javascript">
+            function findGetParameter(parameterName) {
+                var result = null,
+                    tmp = [];
+                location.search
+                .substr(1)
+                    .split("&")
+                    .forEach(function (item) {
+                    tmp = item.split("=");
+                    if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+                });
+                return result;
+            }
             function reload_movie_list()
             {
-                $.get("rec_movies.php", function(data) {
+                var return_max = findGetParameter("return_max");
+                if(return_max == null)
+                {
+                    return_max = 100; 
+                }
+                $.get("rec_movies.php?return_max=" + return_max, function(data) {
                     //$( ".result" ).html( data );
                     //alert( data );
                     $("#rec_movies").html(data);

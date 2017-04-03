@@ -18,7 +18,7 @@ def _init_db():
     if _DB_ENGINE is None:
         conn_fmt = "mysql+pymysql://{}:{}@{}/movielens"
         conn_str = conn_fmt.format(
-            'root', 'password', '172.17.0.1'
+            'root', 'password', 'localhost'
         )
         _DB_ENGINE = create_engine(
             conn_str,
@@ -107,7 +107,7 @@ def rating_rec(member_id):
     keys = {"member_id": member_id}
     result, conn = _db_query(sql=sql, keys=keys)
     if request.args.get('return_max', None) is not None:
-        return_max = request.args['return_max']
+        return_max = int(request.args['return_max'])
     else:
         return_max = 100
     rating = {}
@@ -140,11 +140,12 @@ def rating_rec_guest():
         return nonrate_rec()
     else:
         if request.args.get('return_max', None) is not None:
-            return_max = request.args['return_max']
+            return_max = int(request.args['return_max'])
         else:
             return_max = 100
         ret = []
         rec_movies = TRAIN.get_recommendation(userdata=rating, return_max=return_max, limit=0)
+        # print rec_movies
         for movieid, rec_rating in rec_movies:
             movie = MOVIE_INFO[movieid]
             movie['rating'] = rec_rating

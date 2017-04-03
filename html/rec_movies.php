@@ -7,6 +7,14 @@ for($i = 4.5 ; $i >= 1.0 ; $i = $i - 0.5)
 {
     $option .= "<option value=" . sprintf("%.1f", $i) . ">" . sprintf("%.1f", $i) . "</option>";
 }
+if(isset($_GET['return_max']))
+{
+    $return_max = $_GET['return_max'];
+}
+else
+{
+    $return_max = 100;
+}
 ?>
 <table border="1">
     <tr>
@@ -18,7 +26,7 @@ for($i = 4.5 ; $i >= 1.0 ; $i = $i - 0.5)
 <?php
 if(isset($_SESSION[$sessionID]) && $_SESSION[$done_rate] == 1)
 {
-    $url = $apiurl . "rating_rec/" . $_SESSION[$sessionID];
+    $url = $apiurl . "rating_rec/" . $_SESSION[$sessionID] . "?return_max=" . $return_max;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -26,7 +34,7 @@ if(isset($_SESSION[$sessionID]) && $_SESSION[$done_rate] == 1)
 }
 elseif(isset($_SESSION[$guest_rating]))
 {
-    $url = $apiurl . "rating_rec_guest";
+    $url = $apiurl . "rating_rec_guest" . "?return_max=" . $return_max;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
