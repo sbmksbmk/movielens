@@ -1,4 +1,5 @@
 from math import sqrt
+from scipy import spatial
 
 
 class sbmk_train(object):
@@ -205,13 +206,16 @@ class movie_train(object):
         movie_ranking = {}
         # movie ranking = sum(sim * rank) / sum(sim)
         # Calculate all relation from training data with userdata
+
         if len(userdata) < 10:
-            compaire_method = self.get_sim
+            compaire_method = self.get_cos_sim
         else:
             compaire_method = self.get_correlation
+
         for oid in all_id:
             oid_set = set(self.training_data[oid])
             sim = compaire_method(self.training_data[oid], userdata)
+            # print sim
             if sim >= limit:
                 diff_moive_id = oid_set.difference(umovie_id_set)
                 for movie_id in diff_moive_id:
@@ -244,6 +248,7 @@ class movie_train(object):
         sum_of_eclidean_distance = 0
 
         for item in both_viewed:
+            # print training_user[item], userdata[item]
             sum_of_eclidean_distance += pow(training_user[item] - userdata[item], 2)
         return 1 / (1 + sqrt(sum_of_eclidean_distance))
 
@@ -273,3 +278,20 @@ class movie_train(object):
         else:
             r = numerator_value / denominator_value
             return r
+
+    def get_cos_sim(self, training_user={}, userdata={}):
+        both_rated = set(training_user.keys()).intersection(set(userdata.keys()))
+        number_of_ratings = len(both_rated)
+        # Conditions to check they both have an common rating items
+        if number_of_ratings == 0:
+            return -1
+        if number_of_ratings == 1:
+            # prevent only one rating data will return 1
+            item = both_rated.pop()
+            return (5 - abs(training_user[item] - userdata[item])) / 5
+        cos_arr_train = []
+        cos_arr_user = []
+        for item in both_rated:
+            cos_arr_train.append(training_user[item])
+            cos_arr_user.append(userdata[item])
+        return 1 - spatial.distance.cosine(cos_arr_train, cos_arr_user)
