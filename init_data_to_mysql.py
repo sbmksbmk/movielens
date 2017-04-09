@@ -66,7 +66,6 @@ def main(input):
     for result in movies_for_new:
         sql = 'insert into recommendation_for_new_user (movieid, rating) values ({}, {})'
         sql = sql.format(result['movieid'], result['rating'])
-        print sql
         cur.execute(sql)
     conn.commit()
     """

@@ -18,7 +18,7 @@ def _init_db():
     if _DB_ENGINE is None:
         conn_fmt = "mysql+pymysql://{}:{}@{}/movielens"
         conn_str = conn_fmt.format(
-            'root', 'password', 'localhost'
+            'root', 'password', '172.17.0.1'
         )
         _DB_ENGINE = create_engine(
             conn_str,

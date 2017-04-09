@@ -3,3 +3,4 @@ flask
 pymysql
 SQLAlchemy==1.0.13
 gunicorn
+scipy
