@@ -48,7 +48,6 @@ def main(input):
             if count % 100 == 0:
                 conn.commit()
         conn.commit()
-
     """
     by training data, add some hot movies into db for new user
     rule: need 10% of total training user rated the movie with 4 or higher
@@ -63,10 +62,19 @@ def main(input):
            order by rating desc limit 200'.format(limit)
     cur.execute(sql)
     conn.commit()
-    for result in cur.fetchall():
+    movies_for_new = cur.fetchall()
+    for result in movies_for_new:
         sql = 'insert into recommendation_for_new_user (movieid, rating) values ({}, {})'
         sql = sql.format(result['movieid'], result['rating'])
+        print sql
         cur.execute(sql)
+    conn.commit()
+    """
+    add other movies into db with rating = 1
+    """
+    sql = 'insert ignore into recommendation_for_new_user (movieid, rating) \
+          (select movieid, 1 from movie)'
+    cur.execute(sql)
     conn.commit()
     conn.close()
 
