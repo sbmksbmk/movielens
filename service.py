@@ -176,6 +176,7 @@ def nonrate_rec():
         pass
     return Response(json.dumps(ret), status=status)
 
+
 _init_db()
 _init_training()
 

@@ -4,7 +4,7 @@ import os
 
 
 def main(input):
-    conn = pymysql.connect(host='localhost', port=3306, user='root', passwd='password', db='movielens')
+    conn = pymysql.connect(host='172.17.0.1', port=3306, user='root', passwd='password', db='movielens')
     cur = conn.cursor(pymysql.cursors.DictCursor)
 
     """
