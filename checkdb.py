@@ -1,21 +1,17 @@
+import pymysql
 from sqlalchemy import create_engine, text
 
 
 def checkdb():
-    conn_fmt = "mysql+pymysql://{}:{}@{}"
-    conn_str = conn_fmt.format(
-        'root', 'password', '172.17.0.1'
-    )
-    _DB_ENGINE = create_engine(
-        conn_str,
-        max_overflow=5,
-        pool_size=20,
-    )
-    conn = _DB_ENGINE.connect()
+    conn = pymysql.connect(host='172.17.0.1', port=3306, user='root', passwd='password')
+    cur = conn.cursor(pymysql.cursors.DictCursor)
+
     sql = "CREATE DATABASE IF NOT EXISTS movielens CHARACTER SET utf8 COLLATE utf8_general_ci;"
-    conn.execute(sql)
+    cur.execute(sql)
+    conn.commit()
     sql = "USE movielens"
-    conn.execute(sql)
+    cur.execute(sql)
+    conn.commit()
     sql = "create table if not exists `member` (\
         `userid` varchar(50) NOT NULL,\
         `password` varchar(50) DEFAULT NULL,\
@@ -31,8 +27,8 @@ def checkdb():
         KEY `email` (`email`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-    result = conn.execute(text(sql))
-    result.close()
+    cur.execute(sql)
+    conn.commit()
 
     sql = "create table if not exists `member_rating` (\
         `sn` varchar(80) NOT NULL,\
@@ -44,8 +40,8 @@ def checkdb():
         KEY `memberid` (`member_id`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-    result = conn.execute(text(sql))
-    result.close()
+    cur.execute(sql)
+    conn.commit()
 
     sql = "create table if not exists `movie` (\
         `movieid` int(11) NOT NULL,\
@@ -58,8 +54,8 @@ def checkdb():
         KEY `movie_type` (`movie_type`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-    result = conn.execute(text(sql))
-    result.close()
+    cur.execute(sql)
+    conn.commit()
 
     sql = "create table if not exists `recommendation_for_new_user` (\
         `movieid` int(11) NOT NULL,\
@@ -67,8 +63,8 @@ def checkdb():
         PRIMARY KEY (`movieid`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-    result = conn.execute(text(sql))
-    result.close()
+    cur.execute(sql)
+    conn.commit()
 
     sql = "create table if not exists `traindata` (\
         `sn` int(11) NOT NULL AUTO_INCREMENT,\
@@ -81,8 +77,8 @@ def checkdb():
         KEY `rating` (`rating`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-    result = conn.execute(text(sql))
-    result.close()
+    cur.execute(sql)
+    conn.commit()
 
     sql = "create table if not exists `trainuser` (\
         `tid` int(11) NOT NULL,\
@@ -93,8 +89,8 @@ def checkdb():
         PRIMARY KEY (`tid`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
 
-    result = conn.execute(text(sql))
-    result.close()
+    cur.execute(sql)
+    conn.commit()
     conn.close()
 
 
