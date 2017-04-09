@@ -4,9 +4,12 @@ DOCKER_IMAGE=mysql:5.7
 
 DIR="$(dirname "$PWD")"
 
+# create dir for mysql
+mkdir -p $DIR/mysql
+
 docker rm -f -v $CONTAINER
 cmd="docker run -d --name $CONTAINER \
- MYSQL_ROOT_PASSWORD=password \
+ -e MYSQL_ROOT_PASSWORD=password \
  -v $DIR/mysql:/var/lib/mysql \
  -v $DIR/conf/my.cnf:/etc/mysql/my.cnf \
  -p 3306:3306 \
