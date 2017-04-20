@@ -2,11 +2,7 @@
 session_start();
 include_once "lib/db.php";
 include_once "lib/conf.php";
-$option = "<option value=5.0 selected>5.0</option>";
-for($i = 4.5 ; $i >= 1.0 ; $i = $i - 0.5)
-{
-    $option .= "<option value=" . sprintf("%.1f", $i) . ">" . sprintf("%.1f", $i) . "</option>";
-}
+
 if(isset($_GET['return_max']))
 {
     $return_max = $_GET['return_max'];
@@ -58,7 +54,7 @@ foreach($output as $rec)
     echo "<td>" . $movieid . "</td>";
     echo "<td><a href=\"" . $rec->{'url'} . "\" target=_blank>" . $rec->{'title'} . "</a></td>";
     echo "<td><select id=\"" . $obj_name . "\">";
-    echo $option;
+    echo get_option(number_format($rec->{'rating'}, 2));
     echo "<select><br>";
     echo "<button onclick=\"rating_movie('#" . $obj_name . "', " . $movieid . ")\">Rating It</button></td>"; 
     echo "<td>" . number_format($rec->{'rating'}, 2) . "</td>";
@@ -67,5 +63,19 @@ foreach($output as $rec)
 ?>
 </table>
 <?php
-
+function get_option($rating)
+{
+    $rec_score = round($rating * 2) / 2;
+    $option = "<option value=5.0 selected>5.0</option>";
+    for($i = 4.5 ; $i >= 1.0 ; $i = $i - 0.5)
+    {
+        $option .= "<option value=" . sprintf("%.1f", $i);
+        if($i == $rec_score)
+        {
+            $option .= " selected ";
+        }
+        $option .= ">" . sprintf("%.1f", $i) . "</option>";
+    }
+    return $option;
+}
 ?>
