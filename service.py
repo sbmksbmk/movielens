@@ -10,6 +10,7 @@ import random
 from sqlalchemy import create_engine, text
 import sys
 import time
+import threading
 
 app = Flask(__name__)
 _DB_ENGINE = None
@@ -221,8 +222,11 @@ def _movie_poster_retrieve():
         pass
     return Response("Done", status=200)
 
+
 _init_db()
 _init_training()
+th = threading.Thread(target=_movie_poster_retrieve)
+th.start()
 
 if __name__ == '__main__':
     _init_db()
