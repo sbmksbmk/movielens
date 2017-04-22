@@ -199,6 +199,7 @@ def nonrate_rec():
 
 @app.route('/update_poster', methods=["POST"])
 def update_poster():
+    # not to block init service, update poster info in thread
     global POSTER_THREAD
     try:
         if POSTER_THREAD is None or POSTER_THREAD.is_alive() is False:
@@ -214,6 +215,8 @@ def _movie_poster_retrieve():
     movies, movies_conn = _db_query(sql=sql)
     if movies is not None:
         movie_list = movies.fetchall()
+        # could get poster in multi-thread to enhance performance
+        # but it may be banned if do it in multi-trhead
         for movie in movie_list:
             url = movie['url']
             movieid = movie['movieid']
