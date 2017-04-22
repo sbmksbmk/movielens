@@ -5,7 +5,7 @@ include_once "lib/conf.php";
 ?>
 <table border="1" width="100%">
     <tr>
-        <td width="70">Movie ID</td>
+        <td width="30">ID</td>
         <td>Movie Title</td>
         <td width="70">Your Rating</td>
     </tr>

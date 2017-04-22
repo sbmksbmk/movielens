@@ -50,6 +50,7 @@ def checkdb():
         `url` varchar(300) DEFAULT NULL,\
         `movie_type` varchar(40) DEFAULT NULL,\
         `poster` varchar(255) DEFAULT NULL,\
+        `description` varchar(255) DEFAULT NULL,\
         PRIMARY KEY (`movieid`),\
         KEY `movie_type` (`movie_type`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"

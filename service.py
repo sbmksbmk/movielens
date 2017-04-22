@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cf.recommendation import movie_train
-from imdb_parser import get_movie_image as POSTER
+from imdb_parser import get_movie_extra_infomation as EXTRA_INFO
 
 from flask import Response
 from flask import Flask
@@ -79,25 +79,30 @@ def _init_training():
     except:
         pass
 
-    sql = "select movieid, title, url, poster, movie_type from movie"
+    sql = "select movieid, title, url, poster, description, movie_type from movie"
     result, conn = _db_query(sql=sql)
     res = result.fetchall()
     result.close()
     for row in res:
         poster = '/img/image_not_found.png'
+        description = 'No information or still in retrieving...'
         movie_type = _movie_types(row['movie_type'].strip())
         if row['poster'] is not None:
             poster = row['poster']
+        if row['description'] is not None:
+            description = row['description']
         try:
             MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('utf-8'),
                                           'url': row['url'],
                                           'poster': poster,
+                                          'description': description,
                                           'movie_type': movie_type,
                                           'movieid': row['movieid']}
         except:
             MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('latin-1').encode('utf-8'),
                                           'url': row['url'],
                                           'poster': poster,
+                                          'description': description,
                                           'movie_type': movie_type,
                                           'movieid': row['movieid']}
     try:
@@ -189,6 +194,7 @@ def nonrate_rec():
                         'title': MOVIE_INFO[row['movieid']]['title'],
                         'url': MOVIE_INFO[row['movieid']]['url'],
                         'poster': MOVIE_INFO[row['movieid']]['poster'],
+                        'description': MOVIE_INFO[row['movieid']]['description'],
                         'movie_type': MOVIE_INFO[row['movieid']]['movie_type'],
                         'rating': row['rating']})
         result.close()
@@ -223,10 +229,11 @@ def _movie_poster_retrieve():
         for movie in movie_list:
             url = movie['url']
             movieid = movie['movieid']
-            poster = POSTER(url)
+            poster, description = EXTRA_INFO(url)
             MOVIE_INFO[movieid]['poster'] = poster
-            sql = "update movie set poster=:poster where movieid={}".format(movieid)
-            keys = {"poster": poster}
+            MOVIE_INFO[movieid]['description'] = description
+            sql = "update movie set poster=:poster, description=:description where movieid={}".format(movieid)
+            keys = {"poster": poster, "description": description}
             result, conn = _db_query(sql=sql, keys=keys)
             try:
                 conn.close()
