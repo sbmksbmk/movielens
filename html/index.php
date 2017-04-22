@@ -5,6 +5,18 @@ include_once "lib/conf.php";
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
+        <title>Movies Recommendation</title>
+        <style type="text/css">
+            body{
+                margin:0px;
+                padding:0px;
+                background:#fff url("img/background.jpg") center center fixed no-repeat;
+                -moz-background-size:cover;
+                -webkit-background-size:cover;
+                -o-background-size:cover;
+                background-size:cover;
+            }
+        </style>
         <meta name="keywords" content="" />
         <meta name="description" content="" />
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />

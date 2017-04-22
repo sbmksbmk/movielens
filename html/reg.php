@@ -48,6 +48,18 @@ function endsWith($haystack, $needle)
 ?>
 <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
+        <title>Registration</title>
+        <style type="text/css">
+            body{
+                margin:0px;
+                padding:0px;
+                background:#fff url("img/background.jpg") center center fixed no-repeat;
+                -moz-background-size:cover;
+                -webkit-background-size:cover;
+                -o-background-size:cover;
+                background-size:cover;
+            }
+        </style>
         <meta name="keywords" content="" />
         <meta name="description" content="" />
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -89,42 +101,42 @@ function endsWith($haystack, $needle)
         </script>
     </head>
 <div align="center">
-<form method=POST id="regform" onsubmit="return checkreg(this)">
-    <table border=1>
-        <tr>
-            <td colspan="2" align="center">建立帳號</td>
-        </tr>
-        <tr>
-            <td>帳號</td>
-            <td><input type=text name=acc required value="<?php echo $_POST['acc'];?>"></td>
-        </tr>
-        <tr>
-            <td>密碼</td>
-            <td><input type=password name=pwd required></td>
-        </tr>
-        <tr>
-            <td>密碼驗證</td>
-            <td><input type=password name=vpwd required></td>
-        </tr>
-        <tr>
-            <td>eMail</td>
-            <td><input type="email" placeholder="me@example.com" name=email required value="<?php echo $_POST['email'];?>"></td>
-        </tr>
-        <tr>
-            <td>性別</td>
-            <td>
-                <select name=sex>
-                    <option value="f">女</option>
-                    <option value="m" <?php if($_POST['sex'] == "m") echo "selected";?>>男</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <td>生日</td>
-            <td><input type=text name=birthday maxlength=15 id="datepicker" required value="<?php echo $_POST['birthday'];?>"></td>
-        </tr>
-            <td colspan="2" align="center"><input type=submit value="建立"></td>
-        </tr>
-    </table>
-</form>
+    <form method=POST id="regform" onsubmit="return checkreg(this)">
+        <table border=1>
+            <tr>
+                <td colspan="2" align="center">建立帳號</td>
+            </tr>
+            <tr>
+                <td>帳號</td>
+                <td><input type=text name=acc required value="<?php echo $_POST['acc'];?>"></td>
+            </tr>
+            <tr>
+                <td>密碼</td>
+                <td><input type=password name=pwd required></td>
+            </tr>
+            <tr>
+                <td>密碼驗證</td>
+                <td><input type=password name=vpwd required></td>
+            </tr>
+            <tr>
+                <td>eMail</td>
+                <td><input type="email" placeholder="me@example.com" name=email required value="<?php echo $_POST['email'];?>"></td>
+            </tr>
+            <tr>
+                <td>性別</td>
+                <td>
+                    <select name=sex>
+                        <option value="f">女</option>
+                        <option value="m" <?php if($_POST['sex'] == "m") echo "selected";?>>男</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>生日</td>
+                <td><input type=text name=birthday maxlength=15 id="datepicker" required value="<?php echo $_POST['birthday'];?>"></td>
+            </tr>
+                <td colspan="2" align="center"><input type=submit value="建立"></td>
+            </tr>
+        </table>
+    </form>
 </div>

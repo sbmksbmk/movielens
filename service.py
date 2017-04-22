@@ -79,23 +79,26 @@ def _init_training():
     except:
         pass
 
-    sql = "select movieid, title, url, poster from movie"
+    sql = "select movieid, title, url, poster, movie_type from movie"
     result, conn = _db_query(sql=sql)
     res = result.fetchall()
     result.close()
     for row in res:
         poster = '/img/image_not_found.png'
+        movie_type = _movie_types(row['movie_type'].strip())
         if row['poster'] is not None:
             poster = row['poster']
         try:
             MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('utf-8'),
                                           'url': row['url'],
                                           'poster': poster,
+                                          'movie_type': movie_type,
                                           'movieid': row['movieid']}
         except:
             MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('latin-1').encode('utf-8'),
                                           'url': row['url'],
                                           'poster': poster,
+                                          'movie_type': movie_type,
                                           'movieid': row['movieid']}
     try:
         conn.close()
@@ -167,7 +170,6 @@ def rating_rec_guest():
         for movieid, rec_rating in rec_movies:
             movie = MOVIE_INFO[movieid]
             movie['rating'] = rec_rating
-            movie['poster'] = MOVIE_INFO['poster']
             ret.append(movie)
         return Response(json.dumps(ret), status=200)
 
@@ -187,6 +189,7 @@ def nonrate_rec():
                         'title': MOVIE_INFO[row['movieid']]['title'],
                         'url': MOVIE_INFO[row['movieid']]['url'],
                         'poster': MOVIE_INFO[row['movieid']]['poster'],
+                        'movie_type': MOVIE_INFO[row['movieid']]['movie_type'],
                         'rating': row['rating']})
         result.close()
         status = 200
@@ -235,6 +238,42 @@ def _movie_poster_retrieve():
         pass
     return Response("Done", status=200)
 
+
+def _movie_types(movie_type=None):
+    all_types =['Action',
+                'Adventure',
+                'Animation',
+                'Children\'s',
+                'Comedy',
+                'Crime',
+                'Documentary',
+                'Drama',
+                'Fantasy',
+                'Film-Noir',
+                'Horror',
+                'Musical',
+                'Mystery',
+                'Romance',
+                'Sci-Fi',
+                'Thriller',
+                'War',
+                'Western',
+                '(no genres listed)']
+    if movie_type is None or movie_type == "":
+        return all_types[-1]
+    sp = movie_type.split('|')
+    TYPE = ""
+    for i in range(len(sp)):
+        try:
+            if sp[i] == '1':
+                TYPE += all_types[i] + ", "
+        except:
+            break
+    if len(TYPE) == 0:
+        return all_types[-1]
+    else:
+        # remove tail ", "
+        return TYPE[:-2]
 
 _init_db()
 _init_training()

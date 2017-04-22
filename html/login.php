@@ -34,28 +34,44 @@ if(isset($_POST['uid']))
     }
 }
 ?>
-<script src="js/md5.min.js"></script>
-<script type="text/javascript">
-function checkreg(form)
-{
-    form.pwd.value = md5(form.pwd.value);
-}
-</script>
-<form method=post id="loginform" onsubmit="checkreg(this)">
-    <table border=0>
-        <tr>
-            <td>ID</td>
-            <td><input type=text name=uid <?php echo $_POST['uid'];?>></td>
-        </tr>
-        <tr>
-            <td>Password</td>
-            <td><input type=password name=pwd></td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <input type=submit value="Login">
-            </td>
-        </tr>
-    </table>
-</form>
-
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Login</title>
+        <style type="text/css">
+            body{
+                margin:0px;
+                padding:0px;
+                background:#fff url("img/background.jpg") center center fixed no-repeat;
+                -moz-background-size:cover;
+                -webkit-background-size:cover;
+                -o-background-size:cover;
+                background-size:cover;
+            }
+        </style>
+        <script src="js/md5.min.js"></script>
+        <script type="text/javascript">
+            function checkreg(form)
+            {
+                form.pwd.value = md5(form.pwd.value);
+            }
+        </script>
+    </head>
+<div align="center">
+    <form method=post id="loginform" onsubmit="checkreg(this)">
+        <table border=1>
+            <tr>
+                <td>ID</td>
+                <td><input type=text name=uid <?php echo $_POST['uid'];?>></td>
+            </tr>
+            <tr>
+                <td>Password</td>
+                <td><input type=password name=pwd></td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    <input type=submit value="Login">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>

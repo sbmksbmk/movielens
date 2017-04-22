@@ -15,7 +15,7 @@ else
 <table border="1">
     <tr>
         <td width="30">ID</td>
-        <td>Movie Title</td>
+        <td colspan="2">Movie Title</td>
         <td width="70">Your Rating</td>
         <td width="50">Movie Rating</td>
     </tr>
@@ -52,9 +52,9 @@ foreach($output as $rec)
     $obj_name = "my_rate_" . $movieid;
     echo "<tr>";
     echo "<td>" . $movieid . "</td>";
-    echo "<td>";
-    echo "<img src=\"" . $rec->{'poster'} . "\" width=150><br>";
-    echo "<a href=\"" . $rec->{'url'} . "\" target=_blank>" . $rec->{'title'} . "</a></td>";
+    echo "<td style=\"border-right-style:hidden;\"><img src=\"" . $rec->{'poster'} . "\" width=150></td>";
+    echo "<td valign=top style=\"border-left-style:hidden;\"><a href=\"" . $rec->{'url'} . "\" target=_blank>" .
+         "<font size=5>" . $rec->{'title'} . "</font></a><p><b>Move Type:</b> " . $rec->{'movie_type'} . "</td>";
     echo "<td><select id=\"" . $obj_name . "\">";
     echo get_option(number_format($rec->{'rating'}, 2));
     echo "<select><br>";
