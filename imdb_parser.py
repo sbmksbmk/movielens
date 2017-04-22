@@ -59,7 +59,7 @@ class IMDBUrlHTMLParser(HTMLParser):
 
 
 def get_movie_image(url=None):
-    if url is None:
+    if url is None or url.strip() == "":
         return default_image_url
     """
     get url real url
