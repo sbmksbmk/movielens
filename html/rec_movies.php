@@ -54,7 +54,7 @@ foreach($output as $rec)
     echo "<td>" . $movieid . "</td>";
     echo "<td style=\"border-right-style:hidden;\"><img src=\"" . $rec->{'poster'} . "\" width=150></td>";
     echo "<td valign=top style=\"border-left-style:hidden;\"><a href=\"" . $rec->{'url'} . "\" target=_blank>" .
-         "<font size=5>" . $rec->{'title'} . "</font></a><p><b>Move Type:</b> " . $rec->{'movie_type'} . "</td>";
+         "<font size=5>" . $rec->{'title'} . "</font></a><p><b>Genres:</b> " . $rec->{'movie_type'} . "</td>";
     echo "<td><select id=\"" . $obj_name . "\">";
     echo get_option(number_format($rec->{'rating'}, 2));
     echo "<select><br>";
