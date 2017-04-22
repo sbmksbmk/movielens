@@ -16,6 +16,7 @@ app = Flask(__name__)
 _DB_ENGINE = None
 TRAIN = None
 MOVIE_INFO = None
+POSTER_THREAD = None
 
 reload(sys)
 sys.setdefaultencoding('utf8')
@@ -196,6 +197,17 @@ def nonrate_rec():
     return Response(json.dumps(ret), status=status)
 
 
+@app.route('/update_poster', methods=["POST"])
+def update_poster():
+    global POSTER_THREAD
+    try:
+        if POSTER_THREAD is None or POSTER_THREAD.is_alive() is False:
+            POSTER_THREAD = threading.Thread(target=_movie_poster_retrieve)
+            POSTER_THREAD.start()
+    except:
+        pass
+
+
 def _movie_poster_retrieve():
     global MOVIE_INFO
     sql = "select movieid, url from movie where poster is NULL"
@@ -209,8 +221,6 @@ def _movie_poster_retrieve():
             MOVIE_INFO[movieid]['poster'] = poster
             sql = "update movie set poster=:poster where movieid={}".format(movieid)
             keys = {"poster": poster}
-            print sql
-            print poster
             result, conn = _db_query(sql=sql, keys=keys)
             try:
                 conn.close()
@@ -225,8 +235,7 @@ def _movie_poster_retrieve():
 
 _init_db()
 _init_training()
-th = threading.Thread(target=_movie_poster_retrieve)
-th.start()
+update_poster()
 
 if __name__ == '__main__':
     _init_db()
