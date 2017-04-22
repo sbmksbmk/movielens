@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
 from HTMLParser import HTMLParser
 import requests
+import sys
 
 default_image_url = '/img/image_not_found.png'
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 class IMDBImgHTMLParser(HTMLParser):

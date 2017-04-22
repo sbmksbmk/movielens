@@ -14,7 +14,7 @@ else
 ?>
 <table border="1">
     <tr>
-        <td width="70">Movie ID</td>
+        <td width="30">ID</td>
         <td>Movie Title</td>
         <td width="70">Your Rating</td>
         <td width="50">Movie Rating</td>
@@ -52,7 +52,9 @@ foreach($output as $rec)
     $obj_name = "my_rate_" . $movieid;
     echo "<tr>";
     echo "<td>" . $movieid . "</td>";
-    echo "<td><a href=\"" . $rec->{'url'} . "\" target=_blank>" . $rec->{'title'} . "</a></td>";
+    echo "<td>";
+    echo "<img src=\"" . $rec->{'poster'} . "\" width=150><br>";
+    echo "<a href=\"" . $rec->{'url'} . "\" target=_blank>" . $rec->{'title'} . "</a></td>";
     echo "<td><select id=\"" . $obj_name . "\">";
     echo get_option(number_format($rec->{'rating'}, 2));
     echo "<select><br>";

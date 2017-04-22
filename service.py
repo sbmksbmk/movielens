@@ -1,16 +1,23 @@
-import json
+# -*- coding: utf-8 -*-
+from cf.recommendation import movie_train
+from imdb_parser import get_movie_image as POSTER
+
 from flask import Response
 from flask import Flask
 from flask import request
-from sqlalchemy import create_engine, text
-from cf.recommendation import movie_train
+import json
 import random
+from sqlalchemy import create_engine, text
+import sys
 import time
 
 app = Flask(__name__)
 _DB_ENGINE = None
 TRAIN = None
 MOVIE_INFO = None
+
+reload(sys)
+sys.setdefaultencoding('utf8')
 
 
 def _init_db():
@@ -24,6 +31,8 @@ def _init_db():
             conn_str,
             max_overflow=5,
             pool_size=20,
+            pool_timeout=10,
+            pool_recycle=5
         )
 
 
@@ -68,16 +77,23 @@ def _init_training():
     except:
         pass
 
-    sql = "select movieid, title, url from movie"
+    sql = "select movieid, title, url, poster from movie"
     result, conn = _db_query(sql=sql)
     res = result.fetchall()
     result.close()
     for row in res:
+        poster = '/img/image_not_found.png'
+        if row['poster'] is not None:
+            poster = row['poster']
         try:
-            MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('utf-8'), 'url': row['url'], 'movieid': row['movieid']}
+            MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('utf-8'),
+                                          'url': row['url'],
+                                          'poster': poster,
+                                          'movieid': row['movieid']}
         except:
             MOVIE_INFO[row['movieid']] = {'title': row['title'].decode('latin-1').encode('utf-8'),
                                           'url': row['url'],
+                                          'poster': poster,
                                           'movieid': row['movieid']}
     try:
         conn.close()
@@ -149,6 +165,7 @@ def rating_rec_guest():
         for movieid, rec_rating in rec_movies:
             movie = MOVIE_INFO[movieid]
             movie['rating'] = rec_rating
+            movie['poster'] = MOVIE_INFO['poster']
             ret.append(movie)
         return Response(json.dumps(ret), status=200)
 
@@ -167,6 +184,7 @@ def nonrate_rec():
             ret.append({'movieid': row['movieid'],
                         'title': MOVIE_INFO[row['movieid']]['title'],
                         'url': MOVIE_INFO[row['movieid']]['url'],
+                        'poster': MOVIE_INFO[row['movieid']]['poster'],
                         'rating': row['rating']})
         result.close()
         status = 200
@@ -176,6 +194,32 @@ def nonrate_rec():
         pass
     return Response(json.dumps(ret), status=status)
 
+
+def _movie_poster_retrieve():
+    global MOVIE_INFO
+    sql = "select movieid, url from movie where poster is NULL"
+    movies, movies_conn = _db_query(sql=sql)
+    if movies is not None:
+        movie_list = movies.fetchall()
+        for movie in movie_list:
+            url = movie['url']
+            movieid = movie['movieid']
+            poster = POSTER(url)
+            MOVIE_INFO[movieid]['poster'] = poster
+            sql = "update movie set poster=:poster where movieid={}".format(movieid)
+            keys = {"poster": poster}
+            print sql
+            print poster
+            result, conn = _db_query(sql=sql, keys=keys)
+            try:
+                conn.close()
+            except:
+                pass
+    try:
+        movies_conn.close()
+    except:
+        pass
+    return Response("Done", status=200)
 
 _init_db()
 _init_training()

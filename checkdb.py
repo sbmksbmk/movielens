@@ -49,6 +49,7 @@ def checkdb():
         `v_release_date` varchar(20) DEFAULT NULL,\
         `url` varchar(300) DEFAULT NULL,\
         `movie_type` varchar(40) DEFAULT NULL,\
+        `poster` varchar(255) DEFAULT NULL,\
         PRIMARY KEY (`movieid`),\
         KEY `movie_type` (`movie_type`)\
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8;"
