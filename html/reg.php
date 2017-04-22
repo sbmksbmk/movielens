@@ -108,19 +108,19 @@ function endsWith($haystack, $needle)
             </tr>
             <tr>
                 <td>帳號</td>
-                <td><input type=text name=acc required value="<?php echo $_POST['acc'];?>"></td>
+                <td><input type=text name=acc required value="<?php echo $_POST['acc'];?>" style="background-color: transparent;"></td>
             </tr>
             <tr>
                 <td>密碼</td>
-                <td><input type=password name=pwd required></td>
+                <td><input type=password name=pwd style="background-color: transparent;" required></td>
             </tr>
             <tr>
                 <td>密碼驗證</td>
-                <td><input type=password name=vpwd required></td>
+                <td><input type=password name=vpwd style="background-color: transparent;" required></td>
             </tr>
             <tr>
                 <td>eMail</td>
-                <td><input type="email" placeholder="me@example.com" name=email required value="<?php echo $_POST['email'];?>"></td>
+                <td><input type="email" placeholder="me@example.com" name=email style="background-color: transparent;" required value="<?php echo $_POST['email'];?>"></td>
             </tr>
             <tr>
                 <td>性別</td>
@@ -133,7 +133,7 @@ function endsWith($haystack, $needle)
             </tr>
             <tr>
                 <td>生日</td>
-                <td><input type=text name=birthday maxlength=15 id="datepicker" required value="<?php echo $_POST['birthday'];?>"></td>
+                <td><input type=text name=birthday maxlength=15 id="datepicker" style="background-color: transparent;" required value="<?php echo $_POST['birthday'];?>"></td>
             </tr>
                 <td colspan="2" align="center"><input type=submit value="建立"></td>
             </tr>

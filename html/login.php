@@ -61,11 +61,11 @@ if(isset($_POST['uid']))
         <table border=1>
             <tr>
                 <td>ID</td>
-                <td><input type=text name=uid <?php echo $_POST['uid'];?>></td>
+                <td><input type=text name=uid style="background-color: transparent;" <?php echo $_POST['uid'];?>></td>
             </tr>
             <tr>
                 <td>Password</td>
-                <td><input type=password name=pwd></td>
+                <td><input type=password style="background-color: transparent;" name=pwd></td>
             </tr>
             <tr>
                 <td colspan="2">

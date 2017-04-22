@@ -40,11 +40,11 @@ class IMDBInfoHTMLParser(HTMLParser):
 
     def handle_data(self, data):
         if self.desc_tag is True:
-            self.summary_text = data.strip()
+            self.description = data.strip()
             self.desc_tag = False
 
     def get_description(self):
-        return self.summary_text
+        return self.description
 
 
 class IMDBUrlHTMLParser(HTMLParser):
