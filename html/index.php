@@ -76,8 +76,8 @@ include_once "lib/conf.php";
 if(!isset($_SESSION[$sessionID]))
 {
     // without login... show login page
-    echo "<a href=login.php>LOGIN</a> ";
-    echo "<a href=reg.php>REG</a>";
+    echo "<a href=login.php>Sign In</a> ";
+    echo "<a href=reg.php>Sign Up</a>";
     echo "<p>";
     $_SESSION[$display] = "Guest";
 }
