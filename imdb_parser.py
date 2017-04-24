@@ -50,6 +50,8 @@ class IMDBInfoHTMLParser(HTMLParser):
         result = data
         if len(result) > 255:
             result = "{}...".format(result[:252])
+        elif len(result) == 0:
+            result = default_description
         return result
 
 class IMDBUrlHTMLParser(HTMLParser):

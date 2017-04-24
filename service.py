@@ -60,9 +60,8 @@ def _db_query(sql, keys={}):
 
 
 def _init_training():
-    global TRAIN, MOVIE_INFO
+    global TRAIN
     TRAIN = movie_train()
-    MOVIE_INFO = {}
     sql = "select userid, movieid, rating from traindata where 1"
     result, conn = _db_query(sql=sql)
     training_data = {}
@@ -79,6 +78,10 @@ def _init_training():
     except:
         pass
 
+
+def _load_movie_info():
+    global MOVIE_INFO
+    MOVIE_INFO = {}
     sql = "select movieid, title, url, poster, description, movie_type from movie"
     result, conn = _db_query(sql=sql)
     res = result.fetchall()
@@ -223,6 +226,12 @@ def update_poster():
     else:
         return Response("Still in update poster", status=200)
 
+
+@app.route('/reload_movie_info', methods=["POST"])
+def reload_movie_info():
+    _load_movie_info()
+
+
 def _movie_poster_retrieve():
     global MOVIE_INFO
     sql = "select movieid, url from movie where poster is NULL"
@@ -289,9 +298,12 @@ def _movie_types(movie_type=None):
 
 _init_db()
 _init_training()
+_load_movie_info()
 update_poster()
 
 if __name__ == '__main__':
     _init_db()
     _init_training()
+    _load_movie_info()
+    update_poster()
     app.run(debug=True)
