@@ -24,6 +24,7 @@ class IMDBInfoHTMLParser(HTMLParser):
                     self.img_tag = True
                 elif attrs[0][0] == 'class' and attrs[0][1] == 'summary_text':
                     self.desc_tag = True
+                    self.description = ""
         elif self.img_tag is True and tag == 'img':
             for name, value in attrs:
                 if name == 'src':
@@ -40,8 +41,7 @@ class IMDBInfoHTMLParser(HTMLParser):
 
     def handle_data(self, data):
         if self.desc_tag is True:
-            self.description = self.sub_string(data.strip())
-            self.desc_tag = False
+            self.description = "{} {}".format(self.description, self.sub_string(data.strip()))
 
     def get_description(self):
         return self.description
