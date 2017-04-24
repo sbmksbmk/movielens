@@ -12,8 +12,8 @@ if(isset($_POST['acc']))
     mysql_query($str);
     if(mysql_errno() == 0)
     {
-        echo $str;
-        //header("location: index.php");
+        //echo $str;
+        header("location: index.php");
     }
     else
     {
