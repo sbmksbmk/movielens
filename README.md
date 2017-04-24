@@ -13,5 +13,5 @@
     http://localhost:8080/
 
 # Movies Information
-* Web Crawler<br \>
+* Web Crawler<br />
     After init service, will retrieve Poster & Summary from IMDB page.
