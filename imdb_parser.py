@@ -47,7 +47,7 @@ class IMDBInfoHTMLParser(HTMLParser):
         return self.description
 
     def sub_string(self, data):
-        result = data
+        result = data.strip()
         if len(result) > 255:
             result = "{}...".format(result[:252])
         elif len(result) == 0:
