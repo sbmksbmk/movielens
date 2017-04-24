@@ -210,13 +210,18 @@ def nonrate_rec():
 def update_poster():
     # not to block init service, update poster info in thread
     global POSTER_THREAD
+    re_new = False
     try:
         if POSTER_THREAD is None or POSTER_THREAD.is_alive() is False:
             POSTER_THREAD = threading.Thread(target=_movie_poster_retrieve)
             POSTER_THREAD.start()
+            re_new = True
     except:
         pass
-
+    if re_new is True:
+        return Response("Start update poster", status=200)
+    else:
+        return Response("Still in update poster", status=200)
 
 def _movie_poster_retrieve():
     global MOVIE_INFO
