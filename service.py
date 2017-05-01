@@ -230,6 +230,7 @@ def update_poster():
 @app.route('/reload_movie_info', methods=["POST"])
 def reload_movie_info():
     _load_movie_info()
+    return Response("Reload movie information...", status=200)
 
 
 def _movie_poster_retrieve():
@@ -261,25 +262,25 @@ def _movie_poster_retrieve():
 
 
 def _movie_types(movie_type=None):
-    all_types =['Action',
-                'Adventure',
-                'Animation',
-                'Children\'s',
-                'Comedy',
-                'Crime',
-                'Documentary',
-                'Drama',
-                'Fantasy',
-                'Film-Noir',
-                'Horror',
-                'Musical',
-                'Mystery',
-                'Romance',
-                'Sci-Fi',
-                'Thriller',
-                'War',
-                'Western',
-                '(no genres listed)']
+    all_types = ['Action',
+                 'Adventure',
+                 'Animation',
+                 'Children\'s',
+                 'Comedy',
+                 'Crime',
+                 'Documentary',
+                 'Drama',
+                 'Fantasy',
+                 'Film-Noir',
+                 'Horror',
+                 'Musical',
+                 'Mystery',
+                 'Romance',
+                 'Sci-Fi',
+                 'Thriller',
+                 'War',
+                 'Western',
+                 '(no genres listed)']
     if movie_type is None or movie_type == "":
         return all_types[-1]
     sp = movie_type.split('|')

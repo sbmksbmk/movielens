@@ -54,6 +54,7 @@ class IMDBInfoHTMLParser(HTMLParser):
             result = default_description
         return result
 
+
 class IMDBUrlHTMLParser(HTMLParser):
     got_tag = False
     movie_url = None
