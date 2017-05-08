@@ -39,11 +39,12 @@ def _init_db():
         )
 
 
-def _db_query(sql, keys={}):
+def _db_query(sql, keys={}, conn=None):
     global _DB_ENGINE
     if _DB_ENGINE is None:
         _init_db()
-    conn = _DB_ENGINE.connect()
+    if conn is None:
+        conn = _DB_ENGINE.connect()
     db_retry = 5
     retry_count = 0
     result = None
@@ -74,6 +75,23 @@ def _init_training():
         except:
             training_data[row['userid']] = {row['movieid']: float(row['rating'])}
     TRAIN.load(training_data=training_data)
+
+    sql = "select tid, age, gender from trainuser where 1"
+    training_data = {}
+    result, conn = _db_query(sql=sql, conn=conn)
+    res = result.fetchall()
+    result.close()
+    for row in res:
+        # conversion age from 0 ~ 100 to 1 ~ 5
+        age = row['age'] / 25.0 + 1
+        # conversion gender M to 5 and F to 1
+        gender = 5.0 if row['gender'] == 'M' else 1.0
+        try:
+            training_data[row['tid']] = {'age': age, 'gender': gender}
+        except:
+            # should not be enter here
+            pass
+    TRAIN.add_trainer_info(training_data)
     try:
         conn.close()
     except:
@@ -141,6 +159,12 @@ def rating_rec(member_id):
     else:
         return_max = 100
     rating = {}
+    try:
+        rating['age'] = float(request.args['age'])
+        rating['gender'] = float(request.args['gender'])
+    except:
+        # should not be enter here
+        pass
     if result is not None:
         res = result.fetchall()
         for row in res:
@@ -165,7 +189,10 @@ def rating_rec_guest():
     global TRAIN, MOVIE_INFO
     rating = {}
     for k, v in request.form.items():
-        rating[int(k)] = float(v)
+        try:
+            rating[int(k)] = float(v)
+        except:
+            rating[k] = float(v)
     if len(rating) == 0:
         return nonrate_rec()
     else:

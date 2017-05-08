@@ -192,22 +192,44 @@ class sbmk_train(object):
 
 class movie_train(object):
     def __init__(self):
-        pass
+        self.trainer_key = {}
 
     def get_training_data(self):
         return self.training_data
 
     def load(self, training_data):
+        """
+        training_data format as follow
+        {
+            trainer_id:{
+                {movie_id: raing},
+                {movie_id: raing},
+            },
+            trainer_id:{
+                {movie_id: raing},
+                {movie_id: raing},
+            },
+        }
+        """
         self.training_data = training_data
+
+    def add_trainer_info(self, trainer_info):
+        for user_id, user_info in trainer_info.items():
+            for key, value in user_info.items():
+                self.training_data[user_id][key] = value
 
     def get_recommendation(self, userdata={}, limit=0.3, return_max=100):
         umovie_id_set = set(userdata.keys())
+        for key in self.trainer_key:
+            # add trainer_key into umovie_id_set make sure these keys will not into movie_ranking
+            umovie_id_set.add(key)
         all_id = set(self.training_data.keys())
         movie_ranking = {}
         # movie ranking = sum(sim * rank) / sum(sim)
         # Calculate all relation from training data with userdata
 
         if len(userdata) < 10:
+            # why 10... no reason...
             compaire_method = self.get_cos_sim
         else:
             compaire_method = self.get_correlation
@@ -229,6 +251,7 @@ class movie_train(object):
                 # print oid, sim
                 pass
         rec = {}
+        # print movie_ranking
         for movie_id, result in movie_ranking.items():
             try:
                 rec[movie_id] = result['total'] / result['simsum']
@@ -281,6 +304,7 @@ class movie_train(object):
 
     def get_cos_sim(self, training_user={}, userdata={}):
         both_rated = set(training_user.keys()).intersection(set(userdata.keys()))
+        # print both_rated
         number_of_ratings = len(both_rated)
         # Conditions to check they both have an common rating items
         if number_of_ratings == 0:

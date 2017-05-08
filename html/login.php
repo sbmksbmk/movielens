@@ -19,6 +19,12 @@ if(isset($_POST['uid']))
             $_SESSION[$sessionID] = $_POST['uid'];
             $_SESSION[$done_rate] = $data[$done_rate];
             $_SESSION[$display] = $_POST['uid'];
+            $date = new DateTime($data['birthday']);
+            $now = new DateTime();
+            $age = $date->diff($now)->y / 25.0 + 1;
+            $gender = $data['sex'] == 'm' ? 5:1;
+            $_SESSION['age'] = $age;
+            $_SESSION['gender'] = $gender;
             unset($_SESSION[$guest_rating]);
             header("location: index.php");
         }

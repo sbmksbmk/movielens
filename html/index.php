@@ -70,6 +70,29 @@ include_once "lib/conf.php";
                     });
                 }
             }
+            <?php
+            if(!isset($_SESSION[$sessionID]))
+            {
+            ?>
+            function sleep (time)
+            {
+                return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            function set_guest_info()
+            {
+                var url = "set_guest_info.php?gender=" + $("#gender").val();
+                if($('#age').val() != "")
+                {
+                    url += "&age=" + $("#age").val();
+                }
+                $.get(url);
+                sleep(300).then(() => {
+                    reload_movie_list();
+                });
+            }
+            <?php
+            }
+            ?>
         </script>
     </head>
 <?php
@@ -80,12 +103,49 @@ if(!isset($_SESSION[$sessionID]))
     echo "<a href=reg.php>Sign Up</a>";
     echo "<p>";
     $_SESSION[$display] = "Guest";
+    if(!isset($_SESSION['gender']))
+    {
+        // set default gender as m
+        $_SESSION['gender'] = 5;
+    }
 }
 else
 {
     echo "<a href=logout.php>LOGOUT</a><p>";
 }
 echo "Hi " . $_SESSION[$display] . "<p>";
+if(!isset($_SESSION[$sessionID]))
+{
+    // without login... ask guest's gender & age
+    if($_SESSION['gender'] == 5)
+    {
+        $m = "selected";
+    }
+    else
+    {
+        $f = "selected";
+    }
+    if(isset($_SESSION['age']))
+    {
+        $age = (int)(($_SESSION['age'] - 1) * 25);
+    }
+    ?>
+    <table border="0">
+        <tr>
+            <td>Your gender is</td>
+            <td>
+                <select name="gender" id="gender">
+                    <option value="f" <?php echo $f;?>>Female</option>
+                    <option value="m" <?php echo $m;?>>Male</option>
+                </select>
+            </td>
+            <td>, and your age is</td>
+            <td><input type=text maxlength="2" size=4 id=age name=age value="<?php echo $age;?>"></td>
+            <td><button onclick="set_guest_info();">Confirm</button>
+        </tr>
+    </table>
+    <?php
+}
 ?>
 <table border=0>
     <tr>

@@ -23,7 +23,9 @@ else
 if(isset($_SESSION[$sessionID]) && $_SESSION[$done_rate] == 1)
 {
     // recommendation for members who had rating before
-    $url = $apiurl . "rating_rec/" . $_SESSION[$sessionID] . "?return_max=" . $return_max;
+    $url = $apiurl . "rating_rec/" . $_SESSION[$sessionID] .
+           "?return_max=" . $return_max . "&age=" . $_SESSION['age'] .
+           "&gender=" . $_SESSION['gender'];
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -32,11 +34,20 @@ if(isset($_SESSION[$sessionID]) && $_SESSION[$done_rate] == 1)
 elseif(isset($_SESSION[$guest_rating]))
 {
     // recommendation for GUEST
+    $rating = $_SESSION[$guest_rating];
+    if(isset($_SESSION['age']))
+    {
+        $rating['age'] = $_SESSION['age'];
+    }
+    if(isset($_SESSION['gender']))
+    {
+        $rating['gender'] = $_SESSION['gender'];
+    }
     $url = $apiurl . "rating_rec_guest" . "?return_max=" . $return_max;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, $_SESSION[$guest_rating]);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $rating);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     $output = json_decode(curl_exec($ch));
 }
