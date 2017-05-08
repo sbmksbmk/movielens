@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from cf.recommendation import movie_train
+from conf import env
 from imdb_parser import get_movie_extra_infomation as EXTRA_INFO
 
 from flask import Response
@@ -27,7 +28,7 @@ def _init_db():
     if _DB_ENGINE is None:
         conn_fmt = "mysql+pymysql://{}:{}@{}/movielens"
         conn_str = conn_fmt.format(
-            'root', 'password', '172.17.0.1'
+            env.MYSQL_ACCOUNT, env.MYSQL_PASSWORD, env.MYSQL_SERVER
         )
         _DB_ENGINE = create_engine(
             conn_str,

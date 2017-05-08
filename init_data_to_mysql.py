@@ -1,10 +1,15 @@
+from conf import env
+import os
 import pymysql
 import sys
-import os
 
 
 def main(input):
-    conn = pymysql.connect(host='172.17.0.1', port=3306, user='root', passwd='password', db='movielens')
+    conn = pymysql.connect(host=env.MYSQL_SERVER,
+                           port=3306,
+                           user=env.MYSQL_ACCOUNT,
+                           passwd=env.MYSQL_PASSWORD,
+                           db='movielens')
     cur = conn.cursor(pymysql.cursors.DictCursor)
 
     """
