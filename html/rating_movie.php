@@ -20,6 +20,7 @@ if (preg_match("/^\d+$/", $_GET['movieid']) && preg_match("/^\d+(\.\d{1,2})?/", 
         include_once("lib/db.php");
         //save rating into db
         $sn = $_SESSION[$sessionID] . str_pad($_GET['movieid'], 5, '0', STR_PAD_LEFT);
+        $_SESSION[$done_rate] = 1;
         $time = date('Y-m-d H:i:s');
         $str = "insert into member_rating (sn, member_id, movieid, rating, ratingtime) values " .
                "('" . $sn . "', '" . $_SESSION[$sessionID] . "', " . $_GET['movieid'] . ", " .
