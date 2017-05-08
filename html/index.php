@@ -123,7 +123,7 @@ else
 {
     echo "<a href=logout.php>LOGOUT</a><p>";
 }
-echo "Hi " . $_SESSION[$display] . "<p>";
+echo "Hi " . $_SESSION[$display];
 if(!isset($_SESSION[$sessionID]))
 {
     // without login... ask guest's gender & age
@@ -157,6 +157,7 @@ if(!isset($_SESSION[$sessionID]))
     <?php
 }
 ?>
+<hr>
 <table border=0>
     <tr>
         <td width="60%">This is the movies list you may like<br>
