@@ -90,6 +90,15 @@ include_once "lib/conf.php";
                     reload_movie_list();
                 });
             }
+            function reset_rating()
+            {
+                var url = "reset.php";
+                $.get(url);
+                sleep(300).then(() => {
+                    reload_movie_list();
+                    reload_rated_movie_list();
+                });
+            }
             <?php
             }
             ?>
@@ -101,6 +110,7 @@ if(!isset($_SESSION[$sessionID]))
     // without login... show login page
     echo "<a href=login.php>Sign In</a> ";
     echo "<a href=reg.php>Sign Up</a>";
+    echo " <button onclick='reset_rating();'>Reset Rating data</button>";
     echo "<p>";
     $_SESSION[$display] = "Guest";
     if(!isset($_SESSION['gender']))
