@@ -1,5 +1,7 @@
 # init system
     # copyt training data to local folder
+    # Training data from https://grouplens.org/datasets/movielens/
+    # Training files including u.item, u.user, and u.data
     cp -r MOVIELENS_TRAIN_DATA ./train
     cd docker/
     ./build.sh

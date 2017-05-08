@@ -22,6 +22,7 @@ else
 <?php
 if(isset($_SESSION[$sessionID]) && $_SESSION[$done_rate] == 1)
 {
+    // recommendation for members who had rating before
     $url = $apiurl . "rating_rec/" . $_SESSION[$sessionID] . "?return_max=" . $return_max;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -30,6 +31,7 @@ if(isset($_SESSION[$sessionID]) && $_SESSION[$done_rate] == 1)
 }
 elseif(isset($_SESSION[$guest_rating]))
 {
+    // recommendation for GUEST
     $url = $apiurl . "rating_rec_guest" . "?return_max=" . $return_max;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
@@ -40,6 +42,7 @@ elseif(isset($_SESSION[$guest_rating]))
 }
 else
 {
+    // recommendation for each one who never rating before
     $url = $apiurl . $nonrate_rec . "?return_max=" . $return_max;
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
