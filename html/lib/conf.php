@@ -1,6 +1,5 @@
 <?php
 $apiurl = "http://localhost:5678/";
-$apiurl = "http://192.168.11.65:5678/";
 $sessionID = 'member_id';
 $display = 'display';
 $guest_rating = 'guest_rating';
