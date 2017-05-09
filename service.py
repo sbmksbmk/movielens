@@ -64,6 +64,7 @@ def _db_query(sql, keys={}, conn=None):
 def _init_training():
     global TRAIN
     TRAIN = movie_train()
+    # load training data from db
     sql = "select userid, movieid, rating from traindata where 1"
     result, conn = _db_query(sql=sql)
     training_data = {}
@@ -76,6 +77,7 @@ def _init_training():
             training_data[row['userid']] = {row['movieid']: float(row['rating'])}
     TRAIN.load(training_data=training_data)
 
+    # add trainer gender and age as the training data
     sql = "select tid, age, gender from trainuser where 1"
     training_data = {}
     result, conn = _db_query(sql=sql, conn=conn)
@@ -146,7 +148,7 @@ def index():
 
 @app.route('/rating_rec/<member_id>', methods=["GET"])
 def rating_rec(member_id):
-    # need user account
+    # rating for member who has least one rating record
     global TRAIN, MOVIE_INFO
     ret = []
     status = 400
@@ -159,12 +161,15 @@ def rating_rec(member_id):
     else:
         return_max = 100
     rating = {}
-    try:
-        rating['age'] = float(request.args['age'])
-        rating['gender'] = float(request.args['gender'])
-    except:
-        # should not be enter here
-        pass
+    # get member's gender and age from GET data
+    for key in ['gender', 'age']:
+        if key in request.args:
+            try:
+                rating[key] = float(request.args[key])
+            except:
+                # should not be enter here
+                pass
+
     if result is not None:
         res = result.fetchall()
         for row in res:
@@ -185,7 +190,7 @@ def rating_rec(member_id):
 
 @app.route('/rating_rec_guest', methods=["POST"])
 def rating_rec_guest():
-    # need user account
+    # get recommendation for guest with rating some movies
     global TRAIN, MOVIE_INFO
     rating = {}
     for k, v in request.form.items():
@@ -193,6 +198,7 @@ def rating_rec_guest():
             rating[int(k)] = float(v)
         except:
             rating[k] = float(v)
+    # if without rating history, return nonrate_rec()
     if len(rating) == 0:
         return nonrate_rec()
     else:
@@ -212,6 +218,7 @@ def rating_rec_guest():
 
 @app.route('/nonrate_rec', methods=["GET"])
 def nonrate_rec():
+    # used for without any rating history
     global MOVIE_INFO
     status = 400
     ret = []
