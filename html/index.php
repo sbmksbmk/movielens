@@ -132,6 +132,7 @@ include_once "lib/conf.php";
                     $("#rated_movies").html(data);
                 });
             }
+            rating_movie();
             reload_rated_movie_list();
             function rating_movie(obj_id, movieid)
             {
