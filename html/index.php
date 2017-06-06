@@ -36,6 +36,81 @@ include_once "lib/conf.php";
                 });
                 return result;
             }
+            <?php
+            if(!isset($_SESSION[$sessionID]))
+            {
+                if(isset($_SESSION['guest_info']))
+                {
+                    echo "var GUEST_INFO = " . $_SESSION['guest_info'] . ";";
+                }
+                else
+                {
+                    echo "var GUEST_INFO = 1;";
+                }
+            ?>
+            function sleep (time)
+            {
+                return new Promise((resolve) => setTimeout(resolve, time));
+            }
+            function set_guest_info()
+            {
+                if($('input:radio[name="guest_info_enable"]:checked').val() == 1)
+                {
+                    var url = "set_guest_info.php?gender=" + $("#gender").val();
+                    if($('#age').val() != "")
+                    {
+                        url += "&age=" + $("#age").val();
+                    }
+                    $.get(url);
+                    sleep(300).then(() => {
+                        reload_movie_list();
+                    });
+                }
+            }
+            function unset_guest_info()
+            {
+                var url = "set_guest_info.php?guest_info=0";
+                $.get(url);
+                sleep(300).then(() => {
+                    reload_movie_list();
+                });
+            }
+            function reset_rating()
+            {
+                var url = "reset.php";
+                $.get(url);
+                sleep(300).then(() => {
+                    reload_movie_list();
+                    reload_rated_movie_list();
+                });
+            }
+            $(function () {
+                $('input:radio[name="guest_info_enable"]').change(function() {
+                    if(this.value == 0)
+                    {
+                        unset_guest_info();
+                    }
+                    else
+                    {
+                        set_guest_info();
+                    }
+                });
+            })
+            $(function () {
+                var FILTER = '[value=' + GUEST_INFO + ']';
+                $('input:radio[name="guest_info_enable"]').filter(FILTER).prop('checked', true);
+                if(GUEST_INFO == 0)
+                {
+                    unset_guest_info();
+                }
+                else
+                {
+                    set_guest_info();
+                }
+            })
+            <?php
+            }
+            ?>
             function reload_movie_list()
             {
                 var return_max = findGetParameter("return_max");
@@ -57,7 +132,6 @@ include_once "lib/conf.php";
                     $("#rated_movies").html(data);
                 });
             }
-            reload_movie_list();
             reload_rated_movie_list();
             function rating_movie(obj_id, movieid)
             {
@@ -70,38 +144,6 @@ include_once "lib/conf.php";
                     });
                 }
             }
-            <?php
-            if(!isset($_SESSION[$sessionID]))
-            {
-            ?>
-            function sleep (time)
-            {
-                return new Promise((resolve) => setTimeout(resolve, time));
-            }
-            function set_guest_info()
-            {
-                var url = "set_guest_info.php?gender=" + $("#gender").val();
-                if($('#age').val() != "")
-                {
-                    url += "&age=" + $("#age").val();
-                }
-                $.get(url);
-                sleep(300).then(() => {
-                    reload_movie_list();
-                });
-            }
-            function reset_rating()
-            {
-                var url = "reset.php";
-                $.get(url);
-                sleep(300).then(() => {
-                    reload_movie_list();
-                    reload_rated_movie_list();
-                });
-            }
-            <?php
-            }
-            ?>
         </script>
     </head>
 <?php
@@ -141,6 +183,12 @@ if(!isset($_SESSION[$sessionID]))
     }
     ?>
     <table border="0">
+        <tr>
+            <td colspan="2">
+                <input type=radio name=guest_info_enable id=guest_info_enable value=1>Enable
+                <input type=radio name=guest_info_enable id=guest_info_enable value=0>Disable
+            </td>
+        </tr>
         <tr>
             <td>Your gender is</td>
             <td>
