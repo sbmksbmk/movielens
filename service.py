@@ -178,7 +178,7 @@ def rating_rec(member_id):
         rec_movies = TRAIN.get_recommendation(userdata=rating, return_max=return_max, limit=0.3)
         for movieid, rec_rating in rec_movies:
             movie = MOVIE_INFO[movieid]
-            movie['rating'] = rec_rating
+            movie['rating'] = rec_rating[0]
             ret.append(movie)
         status = 200
     try:
@@ -207,11 +207,11 @@ def rating_rec_guest():
         else:
             return_max = 100
         ret = []
-        rec_movies = TRAIN.get_recommendation(userdata=rating, return_max=return_max, limit=0)
+        rec_movies = TRAIN.get_recommendation(userdata=rating, return_max=return_max, limit=0.3)
         # print rec_movies
         for movieid, rec_rating in rec_movies:
             movie = MOVIE_INFO[movieid]
-            movie['rating'] = rec_rating
+            movie['rating'] = rec_rating[0]
             ret.append(movie)
         return Response(json.dumps(ret), status=200)
 

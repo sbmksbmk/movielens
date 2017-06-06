@@ -223,42 +223,58 @@ class movie_train(object):
         for key in self.trainer_key:
             # add trainer_key into umovie_id_set make sure these keys will not into movie_ranking
             umovie_id_set.add(key)
+        umovie_id_set.add('age')
+        umovie_id_set.add('gender')
         all_id = set(self.training_data.keys())
         movie_ranking = {}
         # movie ranking = sum(sim * rank) / sum(sim)
         # Calculate all relation from training data with userdata
-
+        # Using the "get_cos_sim" method when less rating data
         if len(userdata) < 10:
             # why 10... no reason...
             compaire_method = self.get_cos_sim
         else:
             compaire_method = self.get_correlation
-
+        total_train_user = 0
         for oid in all_id:
             oid_set = set(self.training_data[oid])
             sim = compaire_method(self.training_data[oid], userdata)
-            # print sim
             if sim >= limit:
+                total_train_user += 1
                 diff_moive_id = oid_set.difference(umovie_id_set)
                 for movie_id in diff_moive_id:
                     try:
                         movie_ranking[movie_id]['total'] += sim * self.training_data[oid][movie_id]
                         movie_ranking[movie_id]['simsum'] += sim
+                        movie_ranking[movie_id]['count'] += 1
                     except:
                         movie_ranking[movie_id] = {'total': sim * self.training_data[oid][movie_id],
-                                                   'simsum': sim}
+                                                   'simsum': sim,
+                                                   'count': 1.0}
             else:
                 # print oid, sim
                 pass
         rec = {}
-        # print movie_ranking
+        """
+        print sorted(movie_ranking.items(),
+                     key=lambda x: ((x[1]['total'] / x[1]['simsum']) * (x[1]['count'] / total_train_user),
+                                    (x[1]['total'] / x[1]['simsum'])),
+                     reverse=False)
+        """
+
         for movie_id, result in movie_ranking.items():
             try:
-                rec[movie_id] = result['total'] / result['simsum']
+                # sorted_value used for sorted function
+                # sort result by sim * ( percentage of total train_user )
+                # percentage of total train_user as the confidence intensity
+                sorted_value = (result['total'] / result['simsum']) * (result['count'] / total_train_user)
+                rec[movie_id] = [result['total'] / result['simsum'], sorted_value]
             except:
-                rec[movie_id] = 0
+                rec[movie_id] = [0, 0]
         return_len = min(return_max, len(rec))
-        return sorted(rec.items(), key=lambda x: x[1], reverse=True)[:return_len]
+        limit_rec = sorted(rec.items(), key=lambda x: x[1][1], reverse=True)[:return_len]
+        # print limit_rec
+        return sorted(limit_rec, key=lambda x: x[1][0], reverse=True)
 
     def get_sim(self, training_user={}, userdata={}):
         both_viewed = set(training_user.keys()).intersection(set(userdata.keys()))
@@ -277,7 +293,7 @@ class movie_train(object):
 
     def get_correlation(self, training_user={}, userdata={}):
         both_rated = set(training_user.keys()).intersection(set(userdata.keys()))
-        number_of_ratings = len(both_rated)
+        number_of_ratings = float(len(both_rated))
         # Conditions to check they both have an common rating items
         if number_of_ratings == 0:
             return -1
@@ -299,8 +315,9 @@ class movie_train(object):
         if denominator_value == 0:
             return -1
         else:
-            r = numerator_value / denominator_value
-            return r
+            sim = numerator_value / denominator_value
+            # re_sim = (sim * number_of_ratings) / len(userdata)
+            return sim
 
     def get_cos_sim(self, training_user={}, userdata={}):
         both_rated = set(training_user.keys()).intersection(set(userdata.keys()))
@@ -308,14 +325,12 @@ class movie_train(object):
         number_of_ratings = len(both_rated)
         # Conditions to check they both have an common rating items
         if number_of_ratings == 0:
-            return -1
-        if number_of_ratings == 1:
-            # prevent only one rating data will return 1
-            item = both_rated.pop()
-            return (5 - abs(training_user[item] - userdata[item])) / 5
+            return 0
         cos_arr_train = []
         cos_arr_user = []
         for item in both_rated:
             cos_arr_train.append(training_user[item])
             cos_arr_user.append(userdata[item])
-        return 1 - spatial.distance.cosine(cos_arr_train, cos_arr_user)
+        sim = 1 - spatial.distance.cosine(cos_arr_train, cos_arr_user)
+        # re_sim = (sim * number_of_ratings) / len(userdata)
+        return sim
